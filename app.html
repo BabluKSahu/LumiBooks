@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LumiBooks — App</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+:root{--bg:#0a0c10;--surface:#12151c;--card:#181c25;--border:#252a35;--text:#eaedf3;--muted:#8a90a0;--hint:#5a6070;--accent:#378ADD;--green:#1D9E75;--red:#D4537E;--amber:#BA7517;--radius:12px;--radius-sm:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden}
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--surface);border-right:0.5px solid var(--border);display:flex;flex-direction:column;height:100vh;flex-shrink:0;transition:transform .2s}
+.sidebar-logo{padding:16px 20px;display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;border-bottom:0.5px solid var(--border)}
+.sidebar-logo .icon{width:30px;height:30px;background:linear-gradient(135deg,#378ADD,#7F77DD);border-radius:8px;display:grid;place-items:center;font-size:16px;color:#fff}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 10px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:2px}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:rgba(55,138,221,0.15);color:var(--accent);font-weight:500}
+.nav-item .material-icons-round{font-size:20px}
+.sidebar-footer{padding:12px;border-top:0.5px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius-sm);cursor:pointer}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:14px;font-weight:600;color:#fff}
+.user-info{flex:1;overflow:hidden}.user-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-plan{font-size:11px;color:var(--hint)}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:14px 24px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);flex-shrink:0}
+.topbar h2{font-size:18px;font-weight:600}
+.topbar-actions{display:flex;gap:10px;align-items:center}
+.content{flex:1;overflow-y:auto;padding:24px}
+/* BROADCAST */
+.broadcast-banner{background:rgba(55,138,221,0.1);border:0.5px solid rgba(55,138,221,0.3);border-radius:var(--radius-sm);padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--accent)}
+.broadcast-banner .close{cursor:pointer;margin-left:auto}
+/* CARDS & GRIDS */
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.metric{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px}
+.metric-val{font-size:26px;font-weight:700}.metric-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.metric-val.green{color:var(--green)}.metric-val.red{color:var(--red)}
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:10px 12px;background:var(--surface);color:var(--muted);font-weight:500;font-size:12px;border-bottom:0.5px solid var(--border)}
+.tbl td{padding:10px 12px;border-bottom:0.5px solid var(--border)}
+.tbl tr:hover td{background:rgba(255,255,255,0.02)}
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#2b6cb0}
+.btn-ghost{background:transparent;color:var(--muted);border:0.5px solid var(--border)}.btn-ghost:hover{color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.badge-green{background:rgba(29,158,117,0.15);color:var(--green)}
+.badge-red{background:rgba(212,83,126,0.15);color:var(--red)}
+.badge-amber{background:rgba(186,117,23,0.15);color:var(--amber)}
+.badge-blue{background:rgba(55,138,221,0.15);color:var(--accent)}
+/* MODALS */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:500px;max-height:85vh;overflow-y:auto;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.modal h3{font-size:17px;font-weight:600;margin-bottom:16px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.form-input{width:100%;padding:9px 12px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;font-family:inherit}
+.form-input:focus{outline:none;border-color:var(--accent)}
+.form-row{display:flex;gap:12px}.form-row .form-group{flex:1}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--hint)}
+.empty-state .material-icons-round{font-size:48px;margin-bottom:12px;display:block}
+/* FAB */
+.fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:var(--accent);border-radius:50%;display:grid;place-items:center;cursor:pointer;z-index:100;box-shadow:0 4px 16px rgba(55,138,221,0.3)}
+.fab .material-icons-round{font-size:26px;color:#fff}
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{position:fixed;z-index:150;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .metric-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="icon">L</div>
+    LumiBooks
+  </div>
+  <div class="sidebar-nav" id="sidebar-nav">
+    <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+      <span class="material-icons-round">dashboard</span> Dashboard
+    </div>
+    <div class="nav-item" data-page="transactions" onclick="navigate('transactions')">
+      <span class="material-icons-round">credit_card</span> Transactions
+    </div>
+    <div class="nav-item" data-page="bills" onclick="navigate('bills')">
+      <span class="material-icons-round">receipt_long</span> Bills & Estimates
+    </div>
+    <div class="nav-item" data-page="stock" onclick="navigate('stock')">
+      <span class="material-icons-round">inventory_2</span> Stock
+    </div>
+    <div class="nav-item" data-page="customers" onclick="navigate('customers')">
+      <span class="material-icons-round">group</span> Customers
+    </div>
+    <div class="nav-item" data-page="staff" onclick="navigate('staff')">
+      <span class="material-icons-round">badge</span> Staff
+    </div>
+    <div class="nav-item" data-page="attendance" onclick="navigate('attendance')">
+      <span class="material-icons-round">calendar_today</span> Attendance
+    </div>
+    <div class="nav-item" data-page="reports" onclick="navigate('reports')">
+      <span class="material-icons-round">bar_chart</span> Reports
+    </div>
+    <div class="nav-item" data-page="upgrade" onclick="navigate('upgrade')">
+      <span class="material-icons-round">upgrade</span> Upgrade Plan
+    </div>
+    <div class="nav-item" data-page="profile" onclick="navigate('profile')">
+      <span class="material-icons-round">person</span> Profile & Settings
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="navigate('profile')">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">Loading...</div>
+        <div class="user-plan" id="user-plan">-</div>
+      </div>
+      <span class="material-icons-round" style="color:var(--hint);font-size:18px" onclick="event.stopPropagation();doLogout()">logout</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="material-icons-round" style="display:none;cursor:pointer" id="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">menu</span>
+      <h2 id="page-title">Dashboard</h2>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-sm btn-ghost" onclick="toggleLumi()"><span class="material-icons-round" style="font-size:16px;vertical-align:middle">smart_toy</span> Lumi</button>
+    </div>
+  </div>
+  <div class="content" id="content">
+    <div id="broadcast-area"></div>
+    <div id="page-content">
+      <div class="empty-state"><span class="material-icons-round">hourglass_empty</span>Loading your data...</div>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<div class="fab" id="fab" onclick="handleFab()" title="Quick Add">
+  <span class="material-icons-round">add</span>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="app-modal">
+  <div class="modal" id="app-modal-body"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// GAS URL & STATE
+// ═══════════════════════════════════════
+const GAS_APP_URL = `<?= ScriptApp.getService().getUrl() ?>`;
+let TOKEN = localStorage.getItem('lb_token') || '';
+let USER_ID = '';
+let PLAN_KEY = 'free';
+let PLAN_CONFIG = {};
+let CURRENT_PAGE = 'dashboard';
+
+function api(action, params) {
+  return fetch(GAS_APP_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action, params: { token: TOKEN, ...(params || {}) } })
+  }).then(r => r.json());
+}
+
+function init() {
+  if (!TOKEN) { window.location.href = GAS_APP_URL; return; }
+  api('validateSession').then(r => {
+    if (!r.success) { localStorage.removeItem('lb_token'); window.location.href = GAS_APP_URL; return; }
+    USER_ID = r.userId;
+    PLAN_KEY = r.plan;
+    PLAN_CONFIG = r.planConfig;
+    updateUI(r);
+    navigate('dashboard');
+    if (r.broadcast) showBroadcast(r.broadcast);
+    // Responsive menu
+    if (window.innerWidth <= 768) document.getElementById('menu-btn').style.display = 'block';
+  }).catch(() => { window.location.href = GAS_APP_URL; });
+}
+
+function updateUI(r) {
+  document.getElementById('user-name').textContent = r.userId ? 'My Account' : 'User';
+  document.getElementById('user-plan').textContent = r.planConfig.name + ' Plan';
+  document.getElementById('user-avatar').textContent = 'U';
+}
+
+function showBroadcast(b) {
+  document.getElementById('broadcast-area').innerHTML = `<div class="broadcast-banner">📢 ${b.message} ${b.link ? `<a href="${b.link}" target="_blank" style="margin-left:8px">Learn More →</a>` : ''}<span class="material-icons-round close" style="font-size:16px" onclick="this.parentElement.remove()">close</span></div>`;
+}
+
+// ═══════ NAVIGATION ═══════
+function navigate(page) {
+  CURRENT_PAGE = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+  document.getElementById('page-title').textContent = { dashboard:'Dashboard', transactions:'Transactions', bills:'Bills & Estimates', stock:'Stock Management', customers:'Customers', staff:'Staff Management', attendance:'Attendance', reports:'Reports & Analytics', upgrade:'Upgrade Plan', profile:'Profile & Settings' }[page] || page;
+  document.getElementById('sidebar').classList.remove('open');
+  const loaders = {
+    dashboard: loadDashboard, transactions: loadTransactions, bills: loadBills,
+    stock: loadStock, customers: loadCustomers, staff: loadStaff,
+    attendance: loadAttendance, reports: loadReports, upgrade: loadUpgrade, profile: loadProfile
+  };
+  if (loaders[page]) loaders[page]();
+}
+
+// ═══════ DASHBOARD ═══════
+async function loadDashboard() {
+  const r = await api('getDashboardSummary');
+  if (!r.success) return;
+  const d = r;
+  document.getElementById('page-content').innerHTML = `
+    <div class="metric-grid">
+      <div class="metric"><div class="metric-val green">₹${(d.thisMonthIncome||0).toLocaleString('en-IN')}</div><div class="metric-lbl">Income (This Month)</div></div>
+      <div class="metric"><div class="metric-val red">₹${(d.thisMonthExpense||0).toLocaleString('en-IN')}</div><div class="metric-lbl">Expense (This Month)</div></div>
+      <div class="metric"><div class="metric-val" style="color:${(d.thisMonthProfit||0)>=0?'var(--green)':'var(--red)'}">₹${(d.thisMonthProfit||0).toLocaleString('en-IN')}</div><div class="metric-lbl">Net Profit</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--accent)">${d.billCount||0}</div><div class="metric-lbl">Total Bills</div></div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:12px">Recent Transactions</h3>
+      ${d.recentTransactions && d.recentTransactions.length ? `<table class="tbl"><tr><th>Date</th><th>Category</th><th>Description</th><th>Type</th><th style="text-align:right">Amount</th></tr>${d.recentTransactions.map(t=>`<tr><td>${t.date}</td><td>${t.category}</td><td>${t.description||'-'}</td><td><span class="badge ${t.type==='credit'?'badge-green':'badge-red'}">${t.type}</span></td><td style="text-align:right;font-weight:500">₹${t.totalAmount.toLocaleString('en-IN')}</td></tr>`).join('')}</table>` : '<p style="color:var(--hint);font-size:13px">No transactions yet.</p>'}
+    </div>
+    ${d.lowStockAlerts && d.lowStockAlerts.length ? `<div class="card"><h3 style="font-size:15px;margin-bottom:12px;color:var(--amber)">⚠️ Low Stock Alerts</h3><table class="tbl"><tr><th>Item</th><th>Current Qty</th><th>Reorder Level</th></tr>${d.lowStockAlerts.map(s=>`<tr><td>${s.name}</td><td style="color:var(--red)">${s.current}</td><td>${s.reorder}</td></tr>`).join('')}</table></div>` : ''}`;
+}
+
+// ═══════ TRANSACTIONS ═══════
+async function loadTransactions() {
+  const r = await api('getTransactions');
+  if (!r.success) return;
+  document.getElementById('page-content').innerHTML = `
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="openTxnModal()">+ Add Transaction</button>
+      ${PLAN_CONFIG.hasCSVExport ? `<button class="btn btn-ghost btn-sm" onclick="exportData('transactions')">Export CSV</button>` : ''}
+    </div>
+    <div class="card" style="padding:0;overflow-x:auto">
+      ${r.transactions.length ? `<table class="tbl"><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th style="text-align:right">Amount</th><th></th></tr>${r.transactions.map(t=>`<tr><td>${t.date}</td><td><span class="badge ${t.type==='credit'?'badge-green':'badge-red'}">${t.type}</span></td><td>${t.category}</td><td>${t.description||'-'}</td><td style="text-align:right;font-weight:500">₹${t.totalAmount.toLocaleString('en-IN')}</td><td><button class="btn btn-sm btn-ghost" onclick="deleteRecord('updateTransaction','${t.txnId}','transactions')">×</button></td></tr>`).join('')}</table>` : '<div class="empty-state"><span class="material-icons-round">receipt_long</span>No transactions yet. Click + to add one.</div>'}
+    </div>`;
+}
+
+function openTxnModal() {
+  document.getElementById('app-modal-body').innerHTML = `
+    <h3>Add Transaction</h3>
+    <div class="form-row"><div class="form-group"><label>Type</label><select class="form-input" id="txn-type"><option value="credit">Credit (Income)</option><option value="debit">Debit (Expense)</option></select></div>
+    <div class="form-group"><label>Date</label><input type="date" class="form-input" id="txn-date" value="${new Date().toISOString().split('T')[0]}"></div></div>
+    <div class="form-group"><label>Category</label><input type="text" class="form-input" id="txn-cat" placeholder="e.g., Sales, Rent"></div>
+    <div class="form-group"><label>Description</label><input type="text" class="form-input" id="txn-desc" placeholder="Optional details"></div>
+    <div class="form-row"><div class="form-group"><label>Amount (₹)</label><input type="number" class="form-input" id="txn-amt" placeholder="0.00"></div>
+    <div class="form-group"><label>GST Rate (%)</label><input type="number" class="form-input" id="txn-gst" value="0"></div></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeAppModal()">Cancel</button><button class="btn btn-primary" onclick="saveTxn()">Save</button></div>`;
+  openAppModal();
+}
+
+async function saveTxn() {
+  const r = await api('addTransaction', { type: document.getElementById('txn-type').value, date: document.getElementById('txn-date').value, category: document.getElementById('txn-cat').value, description: document.getElementById('txn-desc').value, amount: document.getElementById('txn-amt').value, gstRate: document.getElementById('txn-gst').value });
+  if (r.success) { closeAppModal(); loadTransactions(); } else alert(r.error);
+}
+
+// ═══════ GENERIC LOADERS (Bills, Stock, Customers, Staff, Attendance, Reports, Upgrade, Profile) ═══════
+async function loadBills() {
+  const r = await api('listEstimates');
+  if(!r.success) return;
+  document.getElementById('page-content').innerHTML = `<div style="margin-bottom:16px"><button class="btn btn-primary btn-sm" onclick="alert('Bill creation is available in the full module view.')">+ New Bill</button></div><div class="card" style="padding:0;overflow-x:auto">${r.bills.length ? `<table class="tbl"><tr><th>Bill No</th><th>Date</th><th>Customer</th><th>Total</th><th>Template</th><th>Status</th></tr>${r.bills.map(b=>`<tr><td style="font-family:monospace">${b.billNumber}</td><td>${b.date}</td><td>${b.customerName||'-'}</td><td style="font-weight:500">₹${(b.totalAmount||0).toLocaleString('en-IN')}</td><td><span class="badge badge-blue">${b.template}</span></td><td><span class="badge badge-${b.status==='paid'?'green':b.status==='cancelled'?'red':'amber'}">${b.status}</span></td></tr>`).join('')}</table>`:'<div class="empty-state"><span class="material-icons-round">receipt_long</span>No bills created yet.</div>'}</div>`;
+}
+
+async function loadStock() {
+  const r = await api('getStockItems');
+  if(!r.success) return;
+  document.getElementById('page-content').innerHTML = `<div style="margin-bottom:16px"><button class="btn btn-primary btn-sm" onclick="alert('Stock creation is available in the full module view.')">+ Add Item</button></div><div class="card" style="padding:0;overflow-x:auto">${r.items.length ? `<table class="tbl"><tr><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>Qty</th><th>Status</th></tr>${r.items.map(s=>`<tr><td>${s.sku||'-'}</td><td>${s.name}</td><td>${s.category||'-'}</td><td>₹${s.sellPrice}</td><td>${s.currentQty}</td><td>${s.currentQty<=s.reorderLevel?'<span class="badge badge-red">Low</span>':'OK'}</td></tr>`).join('')}</table>`:'<div class="empty-state"><span class="material-icons-round">inventory_2</span>No stock items.</div>'}</div>`;
+}
+
+async function loadCustomers() { document.getElementById('page-content').innerHTML = '<div class="empty-state"><span class="material-icons-round">group</span>Customer Management Module</div>'; }
+async function loadStaff() { document.getElementById('page-content').innerHTML = '<div class="empty-state"><span class="material-icons-round">badge</span>Staff Management Module</div>'; }
+async function loadAttendance() { document.getElementById('page-content').innerHTML = '<div class="empty-state"><span class="material-icons-round">calendar_today</span>Attendance Module</div>'; }
+async function loadReports() { document.getElementById('page-content').innerHTML = '<div class="empty-state"><span class="material-icons-round">bar_chart</span>Reports & Analytics Module</div>'; }
+
+async function loadUpgrade() {
+  const upiId = 'lumineerco@ibl';
+  const upiLink = `upi://pay?pa=${upiId}&pn=LumiBooks&am=199&tn=LumiBooks+Standard+Plan+Upgrade&cu=INR`;
+  document.getElementById('page-content').innerHTML = `
+    <div class="card" style="text-align:center;max-width:400px;margin:0 auto">
+      <h3 style="margin-bottom:8px">Upgrade Your Plan</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Pay via UPI, submit UTR, and get activated within 48 hours.</p>
+      <div style="margin-bottom:16px"><strong>UPI ID:</strong> <span style="font-family:monospace;color:var(--accent)">${upiId}</span></div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px">
+        <button class="btn btn-primary" onclick="window.open('${upiLink}','_blank')">Pay ₹199 (Standard)</button>
+      </div>
+      <div class="form-group" style="text-align:left"><label>Enter UTR Number after payment</label><input type="text" class="form-input" id="pay-utr" placeholder="12-digit UTR from UPI app"></div>
+      <div class="form-group" style="text-align:left"><label>Plan</label><select class="form-input" id="pay-plan"><option value="standard">Standard (₹199)</option><option value="premium">Premium (₹399)</option></select></div>
+      <button class="btn btn-primary" style="width:100%" onclick="submitPayment()">Submit Payment</button>
+    </div>`;
+}
+
+async function submitPayment() {
+  const utr = document.getElementById('pay-utr').value.trim();
+  const plan = document.getElementById('pay-plan').value;
+  const amount = plan === 'premium' ? 399 : 199;
+  if (!utr || utr.length < 6) return alert('Please enter a valid UTR number.');
+  const r = await api('submitPayment', { utr, amount, plan });
+  alert(r.message);
+}
+
+async function loadProfile() {
+  const r = await api('getProfile');
+  if (!r.success) return;
+  const initials = (r.name || 'U').charAt(0).toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-name').textContent = r.name || 'User';
+  
+  document.getElementById('page-content').innerHTML = `
+    <div style="max-width:600px">
+      <div class="card" style="text-align:center;margin-bottom:20px">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:24px;font-weight:600;color:#fff;margin:0 auto 12px">${initials}</div>
+        <h3>${r.name || 'User'}</h3>
+        <p style="font-size:13px;color:var(--muted)">${r.email} · ${r.phone || '-'}</p>
+        <p style="margin-top:8px"><span class="badge badge-blue">${r.plan.toUpperCase()} PLAN</span> ${r.premiumExpiry ? `· Expires: ${new Date(r.premiumExpiry).toLocaleDateString('en-IN')}` : ''}</p>
+        <p style="font-size:12px;color:var(--hint);margin-top:6px">Referral Code: <strong style="color:var(--accent)">${r.referralCode}</strong> · ${r.referralCount} referrals</p>
+      </div>
+      
+      <div class="card">
+        <h3 style="font-size:15px;margin-bottom:16px">Business Details</h3>
+        <div class="form-group"><label>Business Name</label><input type="text" class="form-input" id="pf-biz" value="${r.profile.businessName||''}"></div>
+        <div class="form-group"><label>Phone</label><input type="tel" class="form-input" id="pf-phone" value="${r.phone||''}"></div>
+        <div class="form-group"><label>GSTIN</label><input type="text" class="form-input" id="pf-gstin" value="${r.profile.gstIn||''}"></div>
+        <div class="form-group"><label>Address</label><input type="text" class="form-input" id="pf-addr" value="${r.profile.address||''}"></div>
+        <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save Changes</button>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:15px;margin-bottom:12px">Security</h3>
+        <button class="btn btn-ghost btn-sm" onclick="openChangePwd()">Change Password</button>
+      </div>
+
+      ${PLAN_CONFIG.hasPDF ? `
+      <div class="card">
+        <h3 style="font-size:15px;margin-bottom:12px">Data Backup</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Request a backup of all your data as a formatted Google Sheet.</p>
+        <button class="btn btn-primary btn-sm" onclick="requestBackup()">Request Data Backup</button>
+        <div id="backup-list" style="margin-top:16px"></div>
+      </div>` : '<div class="card"><p style="font-size:13px;color:var(--muted)">Data backup is available on Premium plan.</p><button class="btn btn-primary btn-sm" onclick="navigate(\'upgrade\')">Upgrade to Premium</button></div>'}
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:15px;margin-bottom:12px">Payment History</h3>
+        <div id="payment-history"></div>
+      </div>
+    </div>`;
+  
+  loadPaymentHistory();
+  if (PLAN_CONFIG.hasPDF) loadBackupHistory();
+}
+
+async function saveProfile() {
+  const r = await api('updateProfile', { businessName: document.getElementById('pf-biz').value, phone: document.getElementById('pf-phone').value, gstIn: document.getElementById('pf-gstin').value, address: document.getElementById('pf-addr').value });
+  alert(r.message);
+}
+
+function openChangePwd() {
+  document.getElementById('app-modal-body').innerHTML = `
+    <h3>Change Password</h3>
+    <div class="form-group"><label>Current Password</label><input type="password" class="form-input" id="pwd-current"></div>
+    <div class="form-group"><label>New Password</label><input type="password" class="form-input" id="pwd-new"></div>
+    <div class="form-group"><label>Confirm New Password</label><input type="password" class="form-input" id="pwd-confirm"></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeAppModal()">Cancel</button><button class="btn btn-primary" onclick="savePwd()">Update</button></div>`;
+  openAppModal();
+}
+
+async function savePwd() {
+  const c = document.getElementById('pwd-current').value, n = document.getElementById('pwd-new').value, cn = document.getElementById('pwd-confirm').value;
+  if (n !== cn) return alert('Passwords do not match.');
+  const r = await api('changePassword', { currentPassword: c, newPassword: n });
+  if (r.success) { closeAppModal(); alert(r.message); } else alert(r.error);
+}
+
+async function requestBackup() {
+  const r = await api('requestBackup');
+  alert(r.message + (r.driveUrl ? '\n\nOpening backup...' : ''));
+  if (r.driveUrl) window.open(r.driveUrl, '_blank');
+  loadBackupHistory();
+}
+
+async function loadBackupHistory() {
+  const r = await api('getBackupHistory');
+  const el = document.getElementById('backup-list');
+  if (!el || !r.success) return;
+  el.innerHTML = r.backups.length ? `<table class="tbl"><tr><th>Date</th><th>File</th><th></th></tr>${r.backups.map(b=>`<tr><td>${new Date(b.createdAt).toLocaleString('en-IN')}</td><td>${b.name}</td><td><a href="${b.url}" target="_blank" class="btn btn-sm btn-ghost">Open</a></td></tr>`).join('')}</table>` : '<p style="font-size:12px;color:var(--hint)">No backups yet.</p>';
+}
+
+async function loadPaymentHistory() {
+  const r = await api('getPaymentStatus');
+  const el = document.getElementById('payment-history');
+  if (!el || !r.success) return;
+  el.innerHTML = r.payments.length ? `<table class="tbl"><tr><th>UTR</th><th>Amount</th><th>Plan</th><th>Status</th></tr>${r.payments.map(p=>`<tr><td style="font-family:monospace">${p.utr}</td><td>₹${p.amount}</td><td>${p.requestedPlan}</td><td><span class="badge badge-${p.status==='approved'?'green':p.status==='rejected'?'red':'amber'}">${p.status}</span></td></tr>`).join('')}</table>` : '<p style="font-size:12px;color:var(--hint)">No payments submitted.</p>';
+}
+
+// ═══════ UTILITIES ═══════
+async function deleteRecord(action, id, reloadPage) {
+  if (!confirm('Are you sure you want to delete this?')) return;
+  var params = {};
+  if (reloadPage === 'transactions') params.txnId = id;
+  else if (reloadPage === 'bills') params.billId = id;
+  else if (reloadPage === 'stock') params.itemId = id;
+  else if (reloadPage === 'customers') params.customerId = id;
+  else if (reloadPage === 'staff') params.staffId = id;
+  
+  var delAction = {
+    transactions: 'deleteTransaction',
+    bills: 'deleteEstimate',
+    stock: 'deleteStockItem',
+    customers: 'deleteCustomer',
+    staff: 'deleteStaff'
+  }[reloadPage];
+  
+  if (!delAction) return;
+  const res = await api(delAction, params);
+  if (res.success) navigate(reloadPage);
+  else alert(res.error);
+}
+
+function exportData(type) {
+  // Triggers CSV download via backend
+  window.open(GAS_APP_URL, '_blank');
+  // Real implementation uses a form POST to trigger file download
+  const form = document.createElement('form');
+  form.method = 'POST'; form.action = GAS_APP_URL; form.target = '_blank';
+  form.innerHTML = `<input type="hidden" name="payload" value='${JSON.stringify({action:"exportCSV",params:{token:TOKEN,type}})}'>`;
+  document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+}
+
+function handleFab() {
+  if (CURRENT_PAGE === 'transactions') openTxnModal();
+  else if (CURRENT_PAGE === 'dashboard') openTxnModal();
+  else navigate('transactions');
+}
+
+function openAppModal() { document.getElementById('app-modal').classList.add('show'); }
+function closeAppModal() { document.getElementById('app-modal').classList.remove('show'); }
+document.getElementById('app-modal').addEventListener('click', e => { if (e.target.id === 'app-modal') closeAppModal(); });
+
+function doLogout() {
+  api('logout').finally(() => { localStorage.removeItem('lb_token'); window.location.href = GAS_APP_URL; });
+}
+
+// ═══════ LUMI ASSISTANT (APP VERSION) ═══════
+function toggleLumi() { window.open(GAS_APP_URL + '?page=landing#lumi', '_blank'); }
+
+// Init
+init();
+</script>
+</body>
+</html>
