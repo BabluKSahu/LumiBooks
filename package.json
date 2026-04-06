@@ -1,0 +1,8 @@
+{
+  "name": "lumibooks-v3.16",
+  "version": "3.0.0",
+  "private": true,
+  "devDependencies": {
+    "@google/clasp": "^2.4.2"
+  }
+}
