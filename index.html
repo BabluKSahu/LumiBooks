@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LumiBooks — Free Business Management for Indian Businesses</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+:root{--bg:#0a0c10;--surface:#12151c;--card:#181c25;--border:#252a35;--border2:#2d3340;
+--text:#eaedf3;--muted:#8a90a0;--hint:#5a6070;--accent:#378ADD;--accent2:#2b6cb0;
+--green:#1D9E75;--red:#D4537E;--amber:#BA7517;--purple:#7F77DD;--radius:12px;--radius-sm:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,12,16,0.85);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;color:var(--text)}
+.nav-logo .icon{width:32px;height:32px;background:linear-gradient(135deg,#378ADD,#7F77DD);border-radius:8px;display:grid;place-items:center;font-size:18px;color:#fff}
+.nav-actions{display:flex;gap:10px;align-items:center}
+.btn{padding:9px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:transparent;color:var(--muted);border:0.5px solid var(--border)}.btn-ghost:hover{color:var(--text);border-color:var(--border2)}
+/* HERO */
+.hero{padding:120px 24px 80px;text-align:center;max-width:800px;margin:0 auto}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.15;margin-bottom:16px}
+.hero h1 span{background:linear-gradient(135deg,#378ADD,#7F77DD);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:17px;color:var(--muted);max-width:560px;margin:0 auto 32px}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+/* FEATURES */
+.section{padding:60px 24px;max-width:1100px;margin:0 auto}
+.section-title{text-align:center;font-size:28px;font-weight:600;margin-bottom:8px}
+.section-sub{text-align:center;color:var(--muted);margin-bottom:40px;font-size:15px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.feat-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:24px;transition:border-color .2s}
+.feat-card:hover{border-color:var(--accent)}
+.feat-icon{width:40px;height:40px;border-radius:10px;background:var(--surface);display:grid;place-items:center;font-size:20px;margin-bottom:14px;color:var(--accent)}
+.feat-card h3{font-size:15px;font-weight:500;margin-bottom:6px}
+.feat-card p{font-size:13px;color:var(--muted);line-height:1.6}
+/* PRICING */
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.plan-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:24px;position:relative}
+.plan-card.featured{border:2px solid var(--accent)}
+.plan-badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px}
+.plan-name{font-size:17px;font-weight:600;margin-bottom:4px}
+.plan-price{font-size:28px;font-weight:700;margin-bottom:16px}.plan-price span{font-size:13px;font-weight:400;color:var(--muted)}
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.feat-list li{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+.feat-list li::before{content:"✓";color:var(--green);font-weight:600;flex-shrink:0}
+.feat-list li.no::before{content:"✗";color:var(--hint)}
+/* MODAL OVERLAY */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:32px;width:90%;max-width:420px;max-height:90vh;overflow-y:auto;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.modal h2{font-size:20px;font-weight:600;margin-bottom:6px}
+.modal .subtitle{font-size:13px;color:var(--muted);margin-bottom:20px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px}
+.form-input{width:100%;padding:10px 14px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:inherit;transition:border-color .15s}
+.form-input:focus{outline:none;border-color:var(--accent)}
+.form-error{font-size:12px;color:var(--red);margin-top:4px;display:none}
+.form-error.show{display:block}
+.form-link{font-size:13px;color:var(--accent);cursor:pointer;background:none;border:none;margin-top:8px}
+.form-link:hover{text-decoration:underline}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px}
+.modal-switch{text-align:center;font-size:13px;color:var(--muted);margin-top:16px}
+.modal-switch a{color:var(--accent);cursor:pointer;font-weight:500}
+/* FOOTER */
+.footer{padding:40px 24px;text-align:center;border-top:0.5px solid var(--border);margin-top:40px}
+.footer p{font-size:13px;color:var(--hint)}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-bottom:16px}
+.footer-links a{font-size:13px;color:var(--muted)}
+.footer-links a:hover{color:var(--text)}
+/* ASSISTANT BUBBLE */
+.lumi-bubble{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:linear-gradient(135deg,#378ADD,#7F77DD);border-radius:50%;display:grid;place-items:center;cursor:pointer;z-index:150;box-shadow:0 4px 20px rgba(55,138,221,0.3);transition:transform .15s}
+.lumi-bubble:hover{transform:scale(1.08)}
+.lumi-bubble .material-icons-round{font-size:26px;color:#fff}
+/* ASSISTANT PANEL */
+.lumi-panel{position:fixed;bottom:88px;right:24px;width:380px;max-width:calc(100vw - 48px);height:520px;max-height:calc(100vh - 120px);background:var(--card);border:0.5px solid var(--border);border-radius:16px;z-index:150;display:none;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.4);animation:modalIn .2s ease}
+.lumi-panel.show{display:flex}
+.lumi-header{padding:16px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.lumi-header h3{font-size:15px;font-weight:600}
+.lumi-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px}
+.lumi-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lumi-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6}
+.lumi-msg.bot{background:var(--surface);border:0.5px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px}
+.lumi-msg.user{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.lumi-input-area{padding:12px;border-top:0.5px solid var(--border);display:flex;gap:8px}
+.lumi-input-area input{flex:1;padding:10px 14px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px}
+.lumi-input-area input:focus{outline:none;border-color:var(--accent)}
+.lumi-input-area button{width:38px;height:38px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;cursor:pointer;display:grid;place-items:center}
+.lumi-quick{padding:8px 16px;display:flex;gap:6px;flex-wrap:wrap;border-top:0.5px solid var(--border)}
+.lumi-quick button{font-size:11px;padding:4px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer}
+.lumi-quick button:hover{color:var(--text);border-color:var(--accent)}
+/* RESET PAGE */
+.reset-page{max-width:420px;margin:100px auto;padding:0 24px}
+.reset-page h2{font-size:22px;font-weight:600;margin-bottom:6px}
+.reset-page p{font-size:14px;color:var(--muted);margin-bottom:24px}
+/* LEGAL MODALS */
+.legal-content{font-size:13px;color:var(--muted);line-height:1.8;max-height:60vh;overflow-y:auto}
+.legal-content h3{color:var(--text);font-size:15px;margin:16px 0 8px}
+.legal-content p{margin-bottom:10px}
+.legal-content ul{margin-left:20px;margin-bottom:10px}
+.legal-content strong{color:var(--text)}
+.warn-box{background:rgba(186,117,23,0.1);border:0.5px solid rgba(186,117,23,0.3);border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:#d4a04a;margin:12px 0;line-height:1.6}
+/* RESPONSIVE */
+@media(max-width:640px){
+  .nav{padding:12px 16px}.hero{padding:100px 16px 60px}
+  .hero-actions{flex-direction:column;align-items:center}
+  .plan-grid{grid-template-columns:1fr}
+  .lumi-panel{right:8px;left:8px;width:auto;bottom:80px}
+  .feat-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ NAVIGATION ═══════ -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="icon">L</div>
+    LumiBooks
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-ghost" onclick="openLegal('about')">About</button>
+    <button class="btn btn-ghost" onclick="openModal('login')">Login</button>
+    <button class="btn btn-primary" onclick="openModal('register')">Get Started Free</button>
+  </div>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <h1>Manage Your Business<br><span>Like a Pro, For Free</span></h1>
+  <p>Billing, inventory, staff, GST — everything Indian small businesses need. No downloads, no setup fees, completely private.</p>
+  <div class="hero-actions">
+    <button class="btn btn-primary" onclick="openModal('register')">Start Free — No Card Needed</button>
+    <button class="btn btn-ghost" onclick="openModal('login')">I have an account</button>
+  </div>
+</section>
+
+<!-- ═══════ FEATURES ═══════ -->
+<section class="section">
+  <h2 class="section-title">Everything You Need</h2>
+  <p class="section-sub">Built specifically for how Indian businesses actually work.</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon"><span class="material-icons-round">receipt_long</span></div>
+      <h3>GST Billing</h3>
+      <p>Professional tax invoices with CGST, SGST, IGST auto-calculations. 7 beautiful templates.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><span class="material-icons-round">inventory_2</span></div>
+      <h3>Stock Management</h3>
+      <p>Track inventory, get low-stock alerts, and auto-deduct stock when creating bills.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><span class="material-icons-round">group</span></div>
+      <h3>Staff & Attendance</h3>
+      <p>Mark attendance, track salaries, manage advances — all in one place.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><span class="material-icons-round">share</span></div>
+      <h3>Instant Bill Sharing</h3>
+      <p>Share bills via WhatsApp, email, or direct link. Customers can view & print instantly.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><span class="material-icons-round">security</span></div>
+      <h3>100% Private</h3>
+      <p>Your data is managed securely on Google Cloud Server. Completely isolated per account.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><span class="material-icons-round">upgrade</span></div>
+      <h3>Upgrade Anytime</h3>
+      <p>Start free, upgrade when you need PDF downloads, GST billing, or warranty portals.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PRICING ═══════ -->
+<section class="section" id="pricing">
+  <h2 class="section-title">Simple, Transparent Pricing</h2>
+  <p class="section-sub">No hidden fees. No surprises. Cancel anytime.</p>
+  <div class="plan-grid">
+    <div class="plan-card">
+      <div class="plan-badge" style="background:#E6F1FB;color:#0C447C">Free</div>
+      <div class="plan-name">Free Plan</div>
+      <div class="plan-price">₹0 <span>/ forever</span></div>
+      <ul class="feat-list">
+        <li>200+ transactions/month</li><li>20+ bills</li><li>5 stock items</li>
+        <li>URL bill sharing</li><li>WhatsApp share</li><li>Basic reports (30 days)</li>
+        <li class="no">No PDF/Print download</li><li class="no">No GST billing</li>
+      </ul>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-badge" style="background:#EAF3DE;color:#27500A">Standard</div>
+      <div class="plan-name">Standard Plan</div>
+      <div class="plan-price">₹199 <span>/ month</span></div>
+      <ul class="feat-list">
+        <li>500+ transactions/month</li><li>50+ bills (with GST)</li><li>50 stock items</li>
+        <li>Customer printout</li><li>GST billing (CGST/SGST/IGST)</li><li>6-month reports</li>
+        <li class="no">No PDF download</li><li class="no">No warranty portal</li>
+      </ul>
+    </div>
+    <div class="plan-card">
+      <div class="plan-badge" style="background:#FAEEDA;color:#633806">Premium</div>
+      <div class="plan-name">Premium Plan</div>
+      <div class="plan-price">₹399 <span>/ month</span></div>
+      <ul class="feat-list">
+        <li>1500+ transactions/month</li><li>Unlimited bills & stock</li><li>All 7 templates</li>
+        <li>PDF + DOC download</li><li>Warranty portal</li><li>1-year reports & CSV export</li>
+        <li>Data backup (Google Sheets)</li><li>Priority support</li>
+      </ul>
+    </div>
+    <div class="plan-card">
+      <div class="plan-badge" style="background:#FBEAF0;color:#72243E">Enterprise</div>
+      <div class="plan-name">Enterprise Plan</div>
+      <div class="plan-price">Custom <span>/ negotiated</span></div>
+      <ul class="feat-list">
+        <li>Unlimited everything</li><li>Multi-user access</li><li>Custom branding</li>
+        <li>API access</li><li>White-label portal</li><li>3-year history & SLA</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="javascript:void(0)" onclick="openLegal('terms')">Terms of Service</a>
+    <a href="javascript:void(0)" onclick="openLegal('privacy')">Privacy Policy</a>
+    <a href="javascript:void(0)" onclick="openLegal('refund')">Refund Policy</a>
+    <a href="javascript:void(0)" onclick="openLegal('disclaimer')">Disclaimer</a>
+  </div>
+  <p>© 2026 LumineerCo. All rights reserved. LumiBooks is a proprietary product of LumineerCo.</p>
+</footer>
+
+<!-- ═══════ AUTH MODALS ═══════ -->
+<div class="modal-overlay" id="modal-login">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal('login')">&times;</button>
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Log in to your LumiBooks account</p>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" class="form-input" id="login-email" placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-input" id="login-password" placeholder="Enter your password">
+    </div>
+    <div class="form-error" id="login-error"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doLogin()">Log In</button>
+    <div style="text-align:right;margin-top:10px">
+      <button class="form-link" onclick="closeModal('login');openModal('forgot')">Forgot Password?</button>
+    </div>
+    <div class="modal-switch">Don't have an account? <a onclick="closeModal('login');openModal('register')">Sign up free</a></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-register">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal('register')">&times;</button>
+    <h2>Create Account</h2>
+    <p class="subtitle">Start managing your business for free</p>
+    <div class="form-group">
+      <label>Business / Your Name</label>
+      <input type="text" class="form-input" id="reg-name" placeholder="e.g., Rajesh Kumar">
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" class="form-input" id="reg-email" placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" class="form-input" id="reg-phone" placeholder="9876543210">
+    </div>
+    <div class="form-group">
+      <label>Password (min 8 chars, uppercase, lowercase, number)</label>
+      <input type="password" class="form-input" id="reg-password" placeholder="Create a strong password">
+    </div>
+    <div class="form-group">
+      <label>Referral Code (optional)</label>
+      <input type="text" class="form-input" id="reg-referral" placeholder="Enter referral code">
+    </div>
+    <div class="form-error" id="reg-error"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doRegister()">Create Free Account</button>
+    <div class="modal-switch">Already have an account? <a onclick="closeModal('register');openModal('login')">Log in</a></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-forgot">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal('forgot')">&times;</button>
+    <h2>Reset Password</h2>
+    <p class="subtitle">Enter your email and we'll send a reset link</p>
+    <div id="forgot-step1">
+      <div class="form-group">
+        <label>Registered Email Address</label>
+        <input type="email" class="form-input" id="forgot-email" placeholder="you@example.com">
+      </div>
+      <div class="form-error" id="forgot-error"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doForgot()">Send Reset Link</button>
+    </div>
+    <div id="forgot-step2" style="display:none;text-align:center;padding:20px 0">
+      <span class="material-icons-round" style="font-size:48px;color:var(--green)">check_circle</span>
+      <p style="margin:12px 0;font-size:14px;color:var(--muted)">If an account exists with this email, a reset link has been sent. Please check your inbox.</p>
+    </div>
+    <div class="modal-switch"><a onclick="closeModal('forgot');openModal('login')">Back to Login</a></div>
+  </div>
+</div>
+
+<!-- ═══════ LEGAL MODALS ═══════ -->
+<div class="modal-overlay" id="modal-legal">
+  <div class="modal" style="position:relative;max-width:600px">
+    <button class="modal-close" onclick="closeModal('legal')">&times;</button>
+    <div class="legal-content" id="legal-body"></div>
+  </div>
+</div>
+
+<!-- ═══════ LUMI ASSISTANT ═══════ -->
+<div class="lumi-bubble" onclick="toggleLumi()" title="Lumi — LumiBooks Assistant">
+  <span class="material-icons-round">smart_toy</span>
+</div>
+<div class="lumi-panel" id="lumi-panel">
+  <div class="lumi-header">
+    <h3>Lumi — LumiBooks Assistant</h3>
+    <button class="lumi-close" onclick="toggleLumi()">&times;</button>
+  </div>
+  <div class="lumi-messages" id="lumi-messages">
+    <div class="lumi-msg bot">Welcome! I'm Lumi, your LumiBooks assistant. I can help with features, plans, billing, GST, payments, and more. Ask me anything!</div>
+  </div>
+  <div class="lumi-quick">
+    <button onclick="lumiQuick('How do I create a GST bill?')">GST Help</button>
+    <button onclick="lumiQuick('How to upgrade my plan?')">Upgrade</button>
+    <button onclick="lumiQuick('How does data backup work?')">Backup</button>
+    <button onclick="lumiQuick('Is my data safe?')">Privacy</button>
+  </div>
+  <div class="lumi-input-area">
+    <input type="text" id="lumi-input" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendLumi()">
+    <button onclick="sendLumi()"><span class="material-icons-round" style="font-size:20px">send</span></button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// GAS URL CONFIGURATION
+// In GAS deployment, this is replaced by server-side rendering.
+// For GitHub deployment, set window.GAS_APP_URL before loading this script,
+// or configure via GitHub Secrets -> clasp deployment.
+// ═══════════════════════════════════════
+const GAS_APP_URL = `<?= ScriptApp.getService().getUrl() ?>`;
+
+function api(action, params) {
+  return fetch(GAS_APP_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: action, params: params || {} })
+  }).then(r => r.json());
+}
+
+// ═══════ MODAL MANAGEMENT ═══════
+function openModal(id) {
+  document.getElementById('modal-' + id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById('modal-' + id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) { el.classList.remove('show'); document.body.style.overflow = ''; } });
+});
+
+// ═══════ AUTH HANDLERS ═══════
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.classList.remove('show');
+  if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
+  try {
+    const r = await api('login', { email, password });
+    if (r.success) { localStorage.setItem('lb_token', r.token); window.location.href = GAS_APP_URL + '?page=app'; }
+    else { errEl.textContent = r.error; errEl.classList.add('show'); }
+  } catch (e) { errEl.textContent = 'Network error. Please try again.'; errEl.classList.add('show'); }
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const referral = document.getElementById('reg-referral').value.trim();
+  const errEl = document.getElementById('reg-error');
+  errEl.classList.remove('show');
+  if (!name || !email || !phone || !password) { errEl.textContent = 'Please fill in all required fields.'; errEl.classList.add('show'); return; }
+  try {
+    const r = await api('register', { name, email, phone, password, referralCode: referral });
+    if (r.success) { localStorage.setItem('lb_token', r.token); window.location.href = GAS_APP_URL + '?page=app'; }
+    else { errEl.textContent = r.error; errEl.classList.add('show'); }
+  } catch (e) { errEl.textContent = 'Network error. Please try again.'; errEl.classList.add('show'); }
+}
+
+async function doForgot() {
+  const email = document.getElementById('forgot-email').value.trim();
+  const errEl = document.getElementById('forgot-error');
+  errEl.classList.remove('show');
+  if (!email) { errEl.textContent = 'Please enter your email.'; errEl.classList.add('show'); return; }
+  try {
+    await api('requestPasswordReset', { email });
+    document.getElementById('forgot-step1').style.display = 'none';
+    document.getElementById('forgot-step2').style.display = 'block';
+  } catch (e) {
+    document.getElementById('forgot-step1').style.display = 'none';
+    document.getElementById('forgot-step2').style.display = 'block';
+  }
+}
+
+// Check for password reset token in URL
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const resetToken = params.get('reset');
+  if (resetToken) {
+    // Verify token silently
+    api('verifyResetToken', { token: resetToken }).then(r => {
+      if (r.success) showResetForm(resetToken);
+      else showResetError(r.error);
+    });
+  }
+})();
+
+function showResetForm(token) {
+  document.querySelector('.hero').innerHTML = `
+    <div class="reset-page" style="max-width:420px;margin:0 auto;text-align:left">
+      <h2 style="margin-bottom:6px">Set New Password</h2>
+      <p style="margin-bottom:24px">Enter your new password below.</p>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" class="form-input" id="new-pwd" placeholder="Min 8 chars, uppercase, lowercase, number">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" class="form-input" id="confirm-pwd" placeholder="Re-enter password">
+      </div>
+      <div class="form-error" id="reset-error"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doResetPassword('${token}')">Reset Password</button>
+    </div>`;
+}
+
+function showResetError(type) {
+  const msg = type === 'expired' ? 'This link has expired. Please request a new one.' : 'Invalid link. Please request a new one.';
+  document.querySelector('.hero').innerHTML = `
+    <div class="reset-page" style="max-width:420px;margin:0 auto;text-align:left">
+      <h2 style="margin-bottom:6px;color:var(--red)">Link Invalid</h2>
+      <p style="margin-bottom:24px">${msg}</p>
+      <button class="btn btn-primary" onclick="openModal('forgot')">Request New Link</button>
+    </div>`;
+}
+
+async function doResetPassword(token) {
+  const pwd = document.getElementById('new-pwd').value;
+  const confirm = document.getElementById('confirm-pwd').value;
+  const errEl = document.getElementById('reset-error');
+  errEl.classList.remove('show');
+  if (pwd !== confirm) { errEl.textContent = 'Passwords do not match.'; errEl.classList.add('show'); return; }
+  if (pwd.length < 8 || !/[A-Z]/.test(pwd) || !/[a-z]/.test(pwd) || !/[0-9]/.test(pwd)) {
+    errEl.textContent = 'Password must be min 8 chars with uppercase, lowercase, and number.'; errEl.classList.add('show'); return;
+  }
+  const r = await api('resetPassword', { token, newPassword: pwd });
+  if (r.success) {
+    document.querySelector('.hero').innerHTML = `
+      <div class="reset-page" style="max-width:420px;margin:0 auto;text-align:left">
+        <span class="material-icons-round" style="font-size:48px;color:var(--green)">check_circle</span>
+        <h2 style="margin:12px 0 6px">Password Reset Successfully</h2>
+        <p style="margin-bottom:24px">You can now log in with your new password.</p>
+        <button class="btn btn-primary" onclick="openModal('login')">Log In</button>
+      </div>`;
+  } else {
+    errEl.textContent = r.error; errEl.classList.add('show');
+  }
+}
+
+// ═══════ LEGAL CONTENT ═══════
+const legalContent = {
+  about: `<h3>About LumiBooks</h3><p>LumiBooks was built because small business owners in India deserve professional tools without expensive subscriptions, complex setups, or sharing their business data with unknown servers.</p><p><strong>Our Motive:</strong> Empower Indian small businesses with privacy-first, zero-setup tools.</p><p><strong>Privacy Promise:</strong> Your transactions, bills, customers, and staff data are stored in YOUR isolated space on Google Cloud Server. LumiBooks team cannot see your business data. Ever.</p><p><strong>Made for India:</strong> GST billing, INR currency, UPI payments, WhatsApp sharing — built for the way Indian businesses actually operate.</p><p><strong>Zero Setup:</strong> No server to configure, no downloads, no credit card for free plan.</p>`,
+  terms: `<h3>Terms of Service</h3><p>By using LumiBooks, you agree to these terms. LumiBooks is a product of LumineerCo.</p><p><strong>Account Responsibility:</strong> You are responsible for your account credentials and all activities under your account.</p><p><strong>Acceptable Use:</strong> You may not use LumiBooks for illegal activities, reverse engineering, or attempting to access other users' data.</p><p><strong>Account Termination:</strong> We reserve the right to suspend accounts violating these terms.</p><p><strong>Intellectual Property:</strong> All content, design, and code are proprietary to LumineerCo. Unauthorized copying is prohibited.</p><p><strong>Governing Law:</strong> These terms are governed by the laws of Delhi, India.</p>`,
+  privacy: `<h3>Privacy Policy</h3><p><strong>What We Collect:</strong> Account metadata only (name, email, phone, plan status). This is stored securely on Google Cloud Server.</p><p><strong>What We Do NOT Collect:</strong> Your business transactions, bills, customer data, stock data, or staff information. This data lives in YOUR isolated storage.</p><p><strong>Data Isolation:</strong> Each user's business data is completely separated. No cross-contamination.</p><p><strong>Security:</strong> Passwords are SHA-256 hashed with unique salts. Sessions use cryptographic tokens.</p><p><strong>Data Deletion:</strong> You can request account deletion. All associated data will be permanently removed.</p><p><strong>We never sell, share, or analyze your business data.</strong></p>`,
+  refund: `<h3>Refund Policy</h3><p><strong>After Activation:</strong> No refunds once your Premium plan is activated.</p><p><strong>Non-Activation:</strong> If you submit payment and your plan is not activated within 48 hours, raise a payment verification ticket via the assistant.</p><p><strong>Duplicate Payments:</strong> If you accidentally pay twice, the duplicate amount will be refunded within 7 business days.</p><p><strong>How to Claim:</strong> Use the Lumi assistant to raise a Payment Verification ticket with your UTR number.</p>`,
+  disclaimer: `<h3>Disclaimer</h3><div class="warn-box"><strong>GST Disclaimer:</strong> LumiBooks provides GST bill templates for documentation purposes only. We are not responsible for: accuracy of GST calculations, GST filing/compliance, GST-related penalties, data mismatches, or any financial/legal consequences. Always verify with a qualified Chartered Accountant.</div><div class="warn-box"><strong>Data Safety Notice:</strong> LumiBooks is not responsible for any data loss, mismatch, or corruption. Premium users can request data backups from Profile. Always verify critical financial data independently.</div><div class="warn-box"><strong>Warranty Disclaimer:</strong> Warranty information on bills is business-defined. LumiBooks provides the form only — not responsible for warranty fulfillment or disputes.</div>`
+};
+
+function openLegal(type) {
+  document.getElementById('legal-body').innerHTML = legalContent[type] || '';
+  openModal('legal');
+}
+
+// ═══════ LUMI ASSISTANT (Rule-Based — Offline, Private, Zero API) ═══════
+// This implements the system prompt logic 100% client-side for maximum privacy and speed.
+// To integrate a real LLM (e.g., Phi-3 via WebLLM), replace the lumiRespond function.
+let lumiOpen = false;
+function toggleLumi() {
+  lumiOpen = !lumiOpen;
+  document.getElementById('lumi-panel').classList.toggle('show', lumiOpen);
+}
+
+function lumiQuick(q) { document.getElementById('lumi-input').value = q; sendLumi(); }
+
+function sendLumi() {
+  const input = document.getElementById('lumi-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addLumiMsg(q, 'user');
+  setTimeout(() => addLumiMsg(lumiRespond(q), 'bot'), 300 + Math.random() * 400);
+}
+
+function addLumiMsg(text, type) {
+  const container = document.getElementById('lumi-messages');
+  const div = document.createElement('div');
+  div.className = 'lumi-msg ' + type;
+  div.innerHTML = text.replace(/\n/g, '<br>');
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function lumiRespond(q) {
+  const l = q.toLowerCase();
+  
+  // Password reset
+  if (l.includes('forgot password') || l.includes('reset password') || l.includes('change password') || l.includes('can\'t login')) {
+    return "To reset your password:\n1. Go to the Login screen\n2. Click \"Forgot Password?\"\n3. Enter your registered email\n4. Check your inbox for the reset link (valid for 15 minutes)\n5. Click the link and set a new password\n\nIf you don't see the email, check spam/promotions folders.";
+  }
+  // GST
+  if (l.includes('gst') || l.includes('tax invoice')) {
+    return "GST billing is available on Standard plan and above. To create a GST bill:\n1. Go to Bills & Estimates\n2. Click + New Bill\n3. Select a GST template (GST Standard, GST Premium)\n4. Fill customer GSTIN\n5. Add items with GST rate\n6. GST auto-calculates as CGST+SGST (intra-state) or IGST (inter-state)\n\n⚠️ For GST compliance, always consult a qualified Chartered Accountant.";
+  }
+  // Upgrade
+  if (l.includes('upgrade') || l.includes('premium') || l.includes('plan')) {
+    return "To upgrade:\n1. Go to Profile → Upgrade Plan\n2. Select your desired plan\n3. Pay via UPI (QR code or Pay Now button)\n4. Enter the UTR number from your payment\n5. Admin verifies within 48 hours\n6. Plan activates instantly!\n\nStandard: ₹199/mo | Premium: ₹399/mo | Enterprise: Custom";
+  }
+  // Payment issue -> TICKET SCENARIO
+  if (l.includes('payment not activated') || l.includes('paid but not activated') || l.includes('48 hours') || l.includes('utr submitted')) {
+    return "If you've submitted payment and 48+ hours have passed without activation, I can raise a Payment Verification ticket for you.\n\nTo proceed, I'll need:\n• Your UTR number\n• Amount paid\n• Plan requested\n\nWould you like me to open the ticket form now? (Please go to Profile → Payment Status to submit)";
+  }
+  // Backup
+  if (l.includes('backup') || l.includes('download data') || l.includes('export data')) {
+    return "Data backup is available on Premium plan and above.\n1. Go to Profile & Settings\n2. Click \"Request Data Backup\"\n3. A neatly formatted Google Sheet is created with all your data\n4. Each module (Transactions, Bills, Stock, etc.) gets its own tab\n5. Access it from \"My Backups\" in Profile\n\nLimit: 1 backup per 24 hours, max 10 stored.";
+  }
+  // Privacy/Data storage
+  if (l.includes('data safe') || l.includes('privacy') || l.includes('where is my data') || l.includes('data storage') || l.includes('secure')) {
+    return "Your data is completely safe. All business data is managed securely on Google Cloud Server with complete isolation per account. No one — not even LumiBooks team — can access your business transactions, bills, or customer data. Passwords are SHA-256 hashed with unique salts.";
+  }
+  // Referral
+  if (l.includes('referral') || l.includes('refer') || l.includes('earn free')) {
+    return "Refer friends and earn Premium days!\n• 10 Premium days per successful referral\n• 3+ referrals in a month: Bonus 5 days\n• 10 lifetime referrals: 1 month free Premium\n\nShare your referral code from Profile & Settings.";
+  }
+  // Bill sharing
+  if (l.includes('share bill') || l.includes('whatsapp') || l.includes('send bill')) {
+    return "To share a bill:\n1. Open the bill in Bills & Estimates\n2. Set status to \"Sent\" (this generates a share link)\n3. Share via WhatsApp (auto-formatted message), email, or copy the URL\n4. Customers can view the bill without logging in\n\nPrint option: Standard+\nPDF download: Premium+";
+  }
+  // Warranty
+  if (l.includes('warranty')) {
+    return "Warranty system is available on Premium plan.\n1. Enable warranty when creating a bill\n2. Set warranty period (e.g., 12 months)\n3. Customer gets warranty info on their bill portal\n4. Customers can submit warranty claims via the portal link\n5. You review claims in your Warranty Claims section\n\n⚠️ LumiBooks provides the form only — warranty fulfillment is your responsibility.";
+  }
+  // Limits
+  if (l.includes('limit') || l.includes('maximum') || l.includes('how many')) {
+    return "Plan limits:\n• Free: 200 txns/mo, 20 bills, 5 stock, 15 customers, 3 staff\n• Standard: 500 txns/mo, 50 bills, 50 stock, 50 customers, 10 staff\n• Premium: 1500 txns/mo, Unlimited bills/stock/customers/staff\n• Enterprise: Unlimited everything\n\nUpgrade anytime via Profile!";
+  }
+  // Contact support
+  if (l.includes('contact') || l.includes('support') || l.includes('human') || l.includes('agent') || l.includes('talk to someone')) {
+    return "LumiBooks doesn't have human agents or a live support system. I'm Lumi, your dedicated assistant, and I handle all queries!\n\nFor payment issues (48+ hours without activation), you can submit a Payment Verification ticket from your Profile.";
+  }
+  // Pricing
+  if (l.includes('price') || l.includes('cost') || l.includes('how much') || l.includes('free')) {
+    return "LumiBooks pricing:\n• Free: ₹0 forever\n• Standard: ₹199/month\n• Premium: ₹399/month\n• Enterprise: Custom pricing\n\nNo hidden fees. Pay via UPI. Start free, upgrade when ready!";
+  }
+  // Default fallback
+  return "I'm not sure I understand that specific question. Could you try rephrasing?\n\nI can help with:\n• Creating bills & GST invoicing\n• Upgrading your plan\n• Password reset\n• Data backup\n• Referral program\n• Bill sharing & warranty\n• Privacy & security\n\nJust ask!";
+}
+</script>
+</body>
+</html>
