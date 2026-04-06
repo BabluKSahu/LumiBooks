@@ -1,0 +1,24 @@
+{
+  "scriptId": "YOUR_SCRIPT_ID_HERE",
+  "rootDir": ".",
+  "filePushOrder": [
+    "appsscript.json",
+    "Config.gs",
+    "Code.gs",
+    "Auth.gs",
+    "Transactions.gs",
+    "Estimates.gs",
+    "BillPortal.gs",
+    "Stock.gs",
+    "Customers.gs",
+    "Staff.gs",
+    "Reports.gs",
+    "Export.gs",
+    "Backup.gs",
+    "Admin.gs",
+    "Events.gs",
+    "landing.html",
+    "app.html",
+    "portal.html"
+  ]
+}
