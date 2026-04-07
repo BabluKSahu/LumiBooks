@@ -180,7 +180,7 @@ function api(action, params) {
 function init() {
   if (!TOKEN) { window.location.href = GAS_APP_URL; return; }
   api('validateSession').then(r => {
-    if (!r.success) { localStorage.removeItem('lb_token'); window.location.href = GAS_APP_URL; return; }
+    if (!r.success) { localStorage.removeItem('lb_token'); window.location.href = window.location.origin + '/index.html'; }
     USER_ID = r.userId;
     PLAN_KEY = r.plan;
     PLAN_CONFIG = r.planConfig;
