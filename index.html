@@ -349,7 +349,7 @@ a{color:var(--accent);text-decoration:none}
 // For GitHub deployment, set window.GAS_APP_URL before loading this script,
 // or configure via GitHub Secrets -> clasp deployment.
 // ═══════════════════════════════════════
-const GAS_APP_URL = `<?= ScriptApp.getService().getUrl() ?>`;
+const GAS_APP_URL = window.GAS_APP_URL || '';
 
 function api(action, params) {
   return fetch(GAS_APP_URL, {
