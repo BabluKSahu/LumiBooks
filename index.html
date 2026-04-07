@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LumiBooks — Free Business Management for Indian Businesses</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 <style>
 :root{--bg:#0a0c10;--surface:#12151c;--card:#181c25;--border:#252a35;--border2:#2d3340;
@@ -21,6 +23,8 @@ a{color:var(--accent);text-decoration:none}
 .btn{padding:9px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
 .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
 .btn-ghost{background:transparent;color:var(--muted);border:0.5px solid var(--border)}.btn-ghost:hover{color:var(--text);border-color:var(--border2)}
+/* HAMBURGER */
+.menu-toggle{display:none;background:none;border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);cursor:pointer;width:38px;height:38px;align-items:center;justify-content:center;font-size:22px}
 /* HERO */
 .hero{padding:120px 24px 80px;text-align:center;max-width:800px;margin:0 auto}
 .hero h1{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.15;margin-bottom:16px}
@@ -111,6 +115,10 @@ a{color:var(--accent);text-decoration:none}
   .plan-grid{grid-template-columns:1fr}
   .lumi-panel{right:8px;left:8px;width:auto;bottom:80px}
   .feat-grid{grid-template-columns:1fr}
+  .menu-toggle{display:flex}
+  .nav-actions{display:none;flex-direction:column;position:absolute;top:100%;right:0;left:0;background:rgba(10,12,16,0.97);backdrop-filter:blur(20px);padding:16px;gap:10px;border-bottom:0.5px solid var(--border)}
+  .nav-actions.open{display:flex}
+  .nav-actions .btn{width:100%;text-align:center}
 }
 </style>
 </head>
@@ -122,7 +130,10 @@ a{color:var(--accent);text-decoration:none}
     <div class="icon">L</div>
     LumiBooks
   </div>
-  <div class="nav-actions">
+  <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+    <span class="material-icons-round">menu</span>
+  </button>
+  <div class="nav-actions" id="nav-actions">
     <button class="btn btn-ghost" onclick="openLegal('about')">About</button>
     <button class="btn btn-ghost" onclick="openModal('login')">Login</button>
     <button class="btn btn-primary" onclick="openModal('register')">Get Started Free</button>
@@ -350,7 +361,7 @@ a{color:var(--accent);text-decoration:none}
 // or configure via GitHub Secrets -> clasp deployment.
 // ═══════════════════════════════════════
 const GAS_APP_URL = window.GAS_APP_URL || '';
-
+  
 function api(action, params) {
   return fetch(GAS_APP_URL, {
     method: 'POST',
@@ -358,6 +369,22 @@ function api(action, params) {
     body: JSON.stringify({ action: action, params: params || {} })
   }).then(r => r.json());
 }
+
+// ═══════ MOBILE MENU TOGGLE ═══════
+document.getElementById('menu-toggle').addEventListener('click', function() {
+  document.getElementById('nav-actions').classList.toggle('open');
+  var icon = this.querySelector('.material-icons-round');
+  if (icon) icon.textContent = document.getElementById('nav-actions').classList.contains('open') ? 'close' : 'menu';
+});
+// Close mobile menu when a nav button is clicked
+document.getElementById('nav-actions').addEventListener('click', function(e) {
+  if (e.target.closest('.btn') && this.classList.contains('open')) {
+    this.classList.remove('open');
+    var toggle = document.getElementById('menu-toggle');
+    var icon = toggle.querySelector('.material-icons-round');
+    if (icon) icon.textContent = 'menu';
+  }
+});
 
 // ═══════ MODAL MANAGEMENT ═══════
 function openModal(id) {
@@ -382,7 +409,7 @@ async function doLogin() {
   if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
   try {
     const r = await api('login', { email, password });
-    if (r.success) { localStorage.setItem('lb_token', r.token); window.location.href = window.location.origin + '/app.html';
+    if (r.success) { localStorage.setItem('lb_token', r.token); window.location.href = window.APP_BASE + '/app.html'; }
     else { errEl.textContent = r.error; errEl.classList.add('show'); }
   } catch (e) { errEl.textContent = 'Network error. Please try again.'; errEl.classList.add('show'); }
 }
@@ -398,7 +425,7 @@ async function doRegister() {
   if (!name || !email || !phone || !password) { errEl.textContent = 'Please fill in all required fields.'; errEl.classList.add('show'); return; }
   try {
     const r = await api('register', { name, email, phone, password, referralCode: referral });
-    if (r.success) { localStorage.setItem('lb_token', r.token); window.location.href = GAS_APP_URL + '?page=app'; }
+    if (r.success) { localStorage.setItem('lb_token', r.token); window.location.href = window.APP_BASE + '/app.html'; }
     else { errEl.textContent = r.error; errEl.classList.add('show'); }
   } catch (e) { errEl.textContent = 'Network error. Please try again.'; errEl.classList.add('show'); }
 }
