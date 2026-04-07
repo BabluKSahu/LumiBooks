@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LumiBooks — App</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 <style>
 :root{--bg:#0a0c10;--surface:#12151c;--card:#181c25;--border:#252a35;--text:#eaedf3;--muted:#8a90a0;--hint:#5a6070;--accent:#378ADD;--green:#1D9E75;--red:#D4537E;--amber:#BA7517;--radius:12px;--radius-sm:8px}
@@ -178,9 +180,9 @@ function api(action, params) {
 }
 
 function init() {
-  if (!TOKEN) { window.location.href = GAS_APP_URL; return; }
+  if (!TOKEN) { window.location.href = window.APP_BASE + '/index.html'; return; }
   api('validateSession').then(r => {
-    if (!r.success) { localStorage.removeItem('lb_token'); window.location.href = window.location.origin + '/index.html'; }
+    if (!r.success) { localStorage.removeItem('lb_token'); window.location.href = window.APP_BASE + '/index.html'; return; }
     USER_ID = r.userId;
     PLAN_KEY = r.plan;
     PLAN_CONFIG = r.planConfig;
@@ -189,7 +191,7 @@ function init() {
     if (r.broadcast) showBroadcast(r.broadcast);
     // Responsive menu
     if (window.innerWidth <= 768) document.getElementById('menu-btn').style.display = 'block';
-  }).catch(() => { window.location.href = GAS_APP_URL; });
+  }).catch(() => { window.location.href = window.APP_BASE + '/index.html'; });
 }
 
 function updateUI(r) {
@@ -448,11 +450,11 @@ function closeAppModal() { document.getElementById('app-modal').classList.remove
 document.getElementById('app-modal').addEventListener('click', e => { if (e.target.id === 'app-modal') closeAppModal(); });
 
 function doLogout() {
-  api('logout').finally(() => { localStorage.removeItem('lb_token'); window.location.href = GAS_APP_URL; });
+  api('logout').finally(() => { localStorage.removeItem('lb_token'); window.location.href = window.APP_BASE + '/index.html'; });
 }
 
 // ═══════ LUMI ASSISTANT (APP VERSION) ═══════
-function toggleLumi() { window.open(GAS_APP_URL + '?page=landing#lumi', '_blank'); }
+function toggleLumi() { window.open(window.APP_BASE + '/index.html', '_blank'); }
 
 // Init
 init();
