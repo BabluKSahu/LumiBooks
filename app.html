@@ -162,7 +162,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 // ═══════════════════════════════════════
 // GAS URL & STATE
 // ═══════════════════════════════════════
-const GAS_APP_URL = `<?= ScriptApp.getService().getUrl() ?>`;
+const GAS_APP_URL = window.GAS_APP_URL || '';
 let TOKEN = localStorage.getItem('lb_token') || '';
 let USER_ID = '';
 let PLAN_KEY = 'free';
