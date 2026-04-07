@@ -1,13 +1,13 @@
 {
-  "scriptId": "AKfycbzQiRtEFGaPvPiZdVJ3J8Hnie5FIR5I1wB7yquBuXKer8gWq-reaw41ijd_Ck3PczYw",
+  "scriptId": "AKfycbxerw8O9XWuXVYjMlqmB7G93IaY7s0UaW2ldRF1x7VAE1Jqb-pOvdcR8bhi1Ou_cm8eDA",
   "rootDir": ".",
   "filePushOrder": [
     "appsscript.json",
     "Config.gs",
     "Code.gs",
     "Auth.gs",
-    "Transactions.gs",
-    "Estimates.gs",
+    "Transations.gs",
+    "Estimats.gs",
     "BillPortal.gs",
     "Stock.gs",
     "Customers.gs",
@@ -17,7 +17,7 @@
     "Backup.gs",
     "Admin.gs",
     "Events.gs",
-    "landing.html",
+    "index.html",
     "app.html",
     "portal.html"
   ]
