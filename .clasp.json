@@ -1,5 +1,5 @@
 {
-  "scriptId": "AKfycbxerw8O9XWuXVYjMlqmB7G93IaY7s0UaW2ldRF1x7VAE1Jqb-pOvdcR8bhi1Ou_cm8eDA",
+  "scriptId": "window.GAS_APP_URL",
   "rootDir": ".",
   "filePushOrder": [
     "appsscript.json",
