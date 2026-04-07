@@ -382,7 +382,7 @@ async function doLogin() {
   if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
   try {
     const r = await api('login', { email, password });
-    if (r.success) { localStorage.setItem('lb_token', r.token); window.location.href = GAS_APP_URL + '?page=app'; }
+    if (r.success) { localStorage.setItem('lb_token', r.token); window.location.href = window.location.origin + '/app.html';
     else { errEl.textContent = r.error; errEl.classList.add('show'); }
   } catch (e) { errEl.textContent = 'Network error. Please try again.'; errEl.classList.add('show'); }
 }
